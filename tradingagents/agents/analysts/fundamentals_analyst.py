@@ -10,11 +10,10 @@ def create_fundamentals_analyst(llm, toolkit):
         company_name = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            tools = [toolkit.get_fundamentals_openai]
+            tools = [toolkit.get_yfin_insider_transactions]
         else:
             tools = [
-                toolkit.get_finnhub_company_insider_sentiment,
-                toolkit.get_finnhub_company_insider_transactions,
+                toolkit.get_yfin_insider_transactions,
                 toolkit.get_simfin_balance_sheet,
                 toolkit.get_simfin_cashflow,
                 toolkit.get_simfin_income_stmt,

@@ -119,3 +119,60 @@ Adhere strictly to these instructions, and ensure your output is detailed, accur
             "RISK JUDGE", judge_decision, situation, returns_losses
         )
         risk_manager_memory.add_situations([(situation, result)])
+
+    def summarize_analysis(self, final_state: Dict[str, Any]) -> str:
+        """
+        Summarize the key insights from the analysis reports in the final state.
+        """
+        summary_prompt = """
+        You are an expert financial analyst. Your task is to synthesize the following reports and decisions into a concise "Summary of Key Insights".
+        Focus on the most important findings, trends, and the ultimate trading decision, along with the rationale.
+        The summary should be no more than 500 words.
+
+        Here are the reports and decisions:
+
+        Market Report:
+        {market_report}
+
+        Sentiment Report:
+        {sentiment_report}
+
+        News Report:
+        {news_report}
+
+        Fundamentals Report:
+        {fundamentals_report}
+
+        Investment Plan (Research Team Decision):
+        {investment_plan}
+
+        Final Trade Decision (Portfolio Management Decision):
+        {final_trade_decision}
+
+        Provide the summary in a clear, professional, and easy-to-understand manner.
+        """
+
+        # Extract relevant parts from the final_state
+        market_report = final_state.get("market_report", "N/A")
+        sentiment_report = final_state.get("sentiment_report", "N/A")
+        news_report = final_state.get("news_report", "N/A")
+        fundamentals_report = final_state.get("fundamentals_report", "N/A")
+        investment_plan = final_state.get("investment_plan", "N/A")
+        final_trade_decision = final_state.get("final_trade_decision", "N/A")
+
+        formatted_prompt = summary_prompt.format(
+            market_report=market_report,
+            sentiment_report=sentiment_report,
+            news_report=news_report,
+            fundamentals_report=fundamentals_report,
+            investment_plan=investment_plan,
+            final_trade_decision=final_trade_decision,
+        )
+
+        messages = [
+            ("system", "You are a helpful AI assistant that summarizes financial analysis."),
+            ("human", formatted_prompt),
+        ]
+
+        result = self.quick_thinking_llm.invoke(messages).content
+        return result

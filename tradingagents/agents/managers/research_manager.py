@@ -37,19 +37,39 @@ Here is the debate:
 Debate History:
 {history}"""
         response = llm.invoke(prompt)
+        full_response_content = response.content
+
+        # Extract Bull and Bear's latest arguments from history
+        bull_arguments = []
+        bear_arguments = []
+        for line in history.split('\n'):
+            if line.startswith("Bull Analyst:"):
+                bull_arguments.append(line.replace("Bull Analyst:", "").strip())
+            elif line.startswith("Bear Analyst:"):
+                bear_arguments.append(line.replace("Bear Analyst:", "").strip())
+
+        # Get the latest arguments
+        latest_bull_argument = bull_arguments[-1] if bull_arguments else "No recent bull arguments."
+        latest_bear_argument = bear_arguments[-1] if bear_arguments else "No recent bear arguments."
+
+        # Construct the condensed summary
+        condensed_summary = f"**Investment Debate Summary**\n\n"
+        condensed_summary += f"**Bull Analyst Key Point:** {latest_bull_argument}\n\n"
+        condensed_summary += f"**Bear Analyst Key Point:** {latest_bear_argument}\n\n"
+        condensed_summary += f"**Research Manager's Conclusion:** {full_response_content}"
 
         new_investment_debate_state = {
-            "judge_decision": response.content,
+            "judge_decision": full_response_content,
             "history": investment_debate_state.get("history", ""),
             "bear_history": investment_debate_state.get("bear_history", ""),
             "bull_history": investment_debate_state.get("bull_history", ""),
-            "current_response": response.content,
+            "current_response": full_response_content,
             "count": investment_debate_state["count"],
         }
 
         return {
             "investment_debate_state": new_investment_debate_state,
-            "investment_plan": response.content,
+            "investment_plan": condensed_summary,
         }
 
     return research_manager_node

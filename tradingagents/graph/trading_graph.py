@@ -135,8 +135,8 @@ class TradingAgentsGraph:
                     # online tools
                     self.toolkit.get_global_news_openai,
                     self.toolkit.get_google_news,
+                    self.toolkit.get_yfin_news,
                     # offline tools
-                    self.toolkit.get_finnhub_news,
                     self.toolkit.get_reddit_news,
                 ]
             ),
@@ -144,9 +144,8 @@ class TradingAgentsGraph:
                 [
                     # online tools
                     self.toolkit.get_fundamentals_openai,
+                    self.toolkit.get_yfin_insider_transactions,
                     # offline tools
-                    self.toolkit.get_finnhub_company_insider_sentiment,
-                    self.toolkit.get_finnhub_company_insider_transactions,
                     self.toolkit.get_simfin_balance_sheet,
                     self.toolkit.get_simfin_cashflow,
                     self.toolkit.get_simfin_income_stmt,
@@ -182,6 +181,10 @@ class TradingAgentsGraph:
 
         # Store current state for reflection
         self.curr_state = final_state
+
+        # Generate summary of key insights
+        summary_of_key_insights = self.reflector.summarize_analysis(final_state)
+        final_state["summary_of_key_insights"] = summary_of_key_insights
 
         # Log state
         self._log_state(trade_date, final_state)
@@ -219,6 +222,7 @@ class TradingAgentsGraph:
             },
             "investment_plan": final_state["investment_plan"],
             "final_trade_decision": final_state["final_trade_decision"],
+            "summary_of_key_insights": final_state["summary_of_key_insights"],
         }
 
         # Save to file

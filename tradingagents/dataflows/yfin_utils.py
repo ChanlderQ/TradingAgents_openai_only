@@ -115,3 +115,78 @@ class YFinanceUtils:
         majority_voting_result = row_0[row_0 == max_votes].index.tolist()
 
         return majority_voting_result[0], max_votes
+
+    def get_yfin_news(
+        ticker: Annotated[yf.Ticker, "yfinance Ticker object"],
+    ) -> str:
+        """
+        Retrieve news about a company.
+        Args:
+            ticker (yf.Ticker): yfinance Ticker object for the company you are interested in
+        Returns:
+            str: containing the news of the company
+        """
+        news = ticker.news
+        combined_result = ""
+        for entry in news:
+            current_news = (
+                "### " + entry["title"] + f" ({pd.to_datetime(entry['providerPublishTime'], unit='s')})" + "\n" + entry.get('summary', 'No summary available.')
+            )
+            combined_result += current_news + "\n\n"
+        return f"## {ticker.ticker} News:\n" + str(combined_result)
+
+    def get_yfin_insider_transactions(
+        ticker: Annotated[yf.Ticker, "yfinance Ticker object"],
+    ) -> str:
+        """
+        Retrieve insider transcaction information about a company.
+        Args:
+            ticker (yf.Ticker): yfinance Ticker object for the company
+        Returns:
+            str: a report of the company's insider transaction/trading informtaion
+        """
+        insider_transactions = ticker.insider_transactions
+        if insider_transactions.empty:
+            return ""
+        return f"## {ticker.ticker} insider transactions:\n" + str(insider_transactions)
+
+
+if __name__ == "__main__":
+    # Example usage:
+    ticker_symbol = "AAPL"
+    start_date = "2023-01-01"
+    end_date = "2023-12-31"
+
+    # Get stock data
+    stock_data = YFinanceUtils.get_stock_data(ticker_symbol, start_date, end_date)
+    print("Stock Data:")
+    print(stock_data.head())
+
+    # Get company info
+    company_info = YFinanceUtils.get_company_info(ticker_symbol)
+    print("\nCompany Info:")
+    print(company_info)
+
+    # Get dividends
+    dividends = YFinanceUtils.get_stock_dividends(ticker_symbol)
+    print("\nDividends:")
+    print(dividends.head())
+
+    # Get income statement
+    income_stmt = YFinanceUtils.get_income_stmt(ticker_symbol)
+    print("\nIncome Statement:")
+    print(income_stmt.head())
+
+    # Get balance sheet
+    balance_sheet = YFinanceUtils.get_balance_sheet(ticker_symbol)
+    print("\nBalance Sheet:")
+    print(balance_sheet.head())
+
+    # Get cash flow
+    cash_flow = YFinanceUtils.get_cash_flow(ticker_symbol)
+    print("\nCash Flow:")
+    print(cash_flow.head())
+
+    # Get analyst recommendations
+    recommendation, votes = YFinanceUtils.get_analyst_recommendations(ticker_symbol)
+    print(f"\nAnalyst Recommendation: {recommendation} ({votes} votes)")

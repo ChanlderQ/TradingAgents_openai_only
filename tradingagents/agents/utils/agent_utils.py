@@ -67,35 +67,40 @@ class Toolkit:
 
     @staticmethod
     @tool
-    def get_finnhub_news(
+    def get_yfin_news(
         ticker: Annotated[
             str,
             "Search query of a company, e.g. 'AAPL, TSM, etc.",
         ],
-        start_date: Annotated[str, "Start date in yyyy-mm-dd format"],
-        end_date: Annotated[str, "End date in yyyy-mm-dd format"],
     ):
         """
-        Retrieve the latest news about a given stock from Finnhub within a date range
+        Retrieve the latest news about a given stock from Yahoo Finance.
         Args:
             ticker (str): Ticker of a company. e.g. AAPL, TSM
-            start_date (str): Start date in yyyy-mm-dd format
-            end_date (str): End date in yyyy-mm-dd format
         Returns:
-            str: A formatted dataframe containing news about the company within the date range from start_date to end_date
+            str: A formatted dataframe containing news about the company.
         """
 
-        end_date_str = end_date
+        yfin_news_result = interface.YFinanceUtils.get_yfin_news(ticker)
 
-        end_date = datetime.strptime(end_date, "%Y-%m-%d")
-        start_date = datetime.strptime(start_date, "%Y-%m-%d")
-        look_back_days = (end_date - start_date).days
+        return yfin_news_result
 
-        finnhub_news_result = interface.get_finnhub_news(
-            ticker, end_date_str, look_back_days
-        )
+    @staticmethod
+    @tool
+    def get_yfin_insider_transactions(
+        ticker: Annotated[str, "ticker symbol"],
+    ):
+        """
+        Retrieve insider transaction information about a company.
+        Args:
+            ticker (str): ticker symbol of the company
+        Returns:
+            str: a report of the company's insider transactions/trading information.
+        """
 
-        return finnhub_news_result
+        data_trans = interface.YFinanceUtils.get_yfin_insider_transactions(ticker)
+
+        return data_trans
 
     @staticmethod
     @tool
@@ -219,53 +224,9 @@ class Toolkit:
 
         return result_stockstats
 
-    @staticmethod
-    @tool
-    def get_finnhub_company_insider_sentiment(
-        ticker: Annotated[str, "ticker symbol for the company"],
-        curr_date: Annotated[
-            str,
-            "current date of you are trading at, yyyy-mm-dd",
-        ],
-    ):
-        """
-        Retrieve insider sentiment information about a company (retrieved from public SEC information) for the past 30 days
-        Args:
-            ticker (str): ticker symbol of the company
-            curr_date (str): current date you are trading at, yyyy-mm-dd
-        Returns:
-            str: a report of the sentiment in the past 30 days starting at curr_date
-        """
+    
 
-        data_sentiment = interface.get_finnhub_company_insider_sentiment(
-            ticker, curr_date, 30
-        )
-
-        return data_sentiment
-
-    @staticmethod
-    @tool
-    def get_finnhub_company_insider_transactions(
-        ticker: Annotated[str, "ticker symbol"],
-        curr_date: Annotated[
-            str,
-            "current date you are trading at, yyyy-mm-dd",
-        ],
-    ):
-        """
-        Retrieve insider transaction information about a company (retrieved from public SEC information) for the past 30 days
-        Args:
-            ticker (str): ticker symbol of the company
-            curr_date (str): current date you are trading at, yyyy-mm-dd
-        Returns:
-            str: a report of the company's insider transactions/trading information in the past 30 days
-        """
-
-        data_trans = interface.get_finnhub_company_insider_transactions(
-            ticker, curr_date, 30
-        )
-
-        return data_trans
+    
 
     @staticmethod
     @tool
